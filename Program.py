@@ -5,7 +5,6 @@ import time
 import av_utils
 import mhi_update
 import classify
-
         
 def getBiggestCountour(Seq):
     max_area =0
@@ -26,7 +25,7 @@ def getHuMoments(Seq,binary=1):
 
 Thresh = 3
 
-bg = './data/background1.jpg'
+bg = './data/background2.jpg'
 
 pathes = [('./data/train/1-1/',1),('./data/train/1-2/',1),('./data/train/1-3/',1)
         ,('./data/train/1-4/',2),('./data/train/1-5/',2),('./data/train/1-6/',2)
@@ -42,7 +41,6 @@ path=pathes[index][0]
 type=pathes[index][1]
 time=30
 mhi_update.init()
-bg= './data/background1.jpg'
 dirList=os.listdir(path)
 cv.NamedWindow('image')
 
@@ -98,7 +96,7 @@ for fname in dirList:
     #cv.Threshold(img_gray,,Thresh,Thresh,cv.CV_THRESH_BINARY)
     
     #img_bw_sub_eroded=cv.CreateImage(img_size,cv.IPL_DEPTH_8U,1)
-    kernel=cv.CreateStructuringElementEx(21,21,11,11,cv.CV_SHAPE_CROSS)
+    kernel=cv.CreateStructuringElementEx(11,11,6,6,cv.CV_SHAPE_CROSS)
     #cv.Erode(img_bw_sub,img_bw_sub_eroded,kernel)
 
     img_bw_sub_dilated=cv.CreateImage(img_size, cv.IPL_DEPTH_8U, 1)
@@ -113,7 +111,7 @@ for fname in dirList:
     
     if (len(seq) != 0):
         cnt_biggest, area = getBiggestCountour(seq)
-        if (area > 13000):
+        if (area > 15000):
             maxareaseq.append(area)
             av_utils.av_debug('contours area:'+str(area))
             rect = cv.BoundingRect(cnt_biggest)
@@ -125,32 +123,29 @@ for fname in dirList:
                                   cv.RGB(255,255,255))    
             
             tempimg = cv.CreateImage(img_size, img_depth, img_channel)
-            cv.DrawContours(tempimg, cnt_biggest, cv.RGB(128,128,128), cv.RGB(128,128,128), 0)
+            cv.DrawContours(tempimg, cnt_biggest, cv.RGB(255,255,255), cv.RGB(255,255,255), 0)
             rectimgs.append(cv.GetSubRect(tempimg, rect))
+                                               
             
-                                     
-            
-    cv.ShowImage('image', img_sub)
-    cv.ShowImage('image_temp', img_bw_sub)
-    #cv.WaitKey(-1)    
+            cv.ShowImage('image', img_sub)
+            cv.ShowImage('image_temp', img_bw_sub)
+    
 
-largest_bound=(bounding_rects[0][0],bounding_rects[0][1],bounding_rects[0][0]+bounding_rects[0][2],bounding_rects[0][1]+bounding_rects[0][3])
-for i in bounding_rects:
-    if(i[0]<largest_bound[0]):
-        largest_bound=(i[0],largest_bound[1],largest_bound[2],largest_bound[3])
-    if(i[1]<largest_bound[1]):
-        largest_bound=(largest_bound[0],i[1],largest_bound[2],largest_bound[3])
-    if((i[2]+i[0])>largest_bound[2]):
-        largest_bound=(largest_bound[0],largest_bound[1],(i[0]+i[2]),largest_bound[3])
-    if((i[3]+i[1])>largest_bound[3]):
-        largest_bound=(largest_bound[0],largest_bound[1],largest_bound[2],(i[1]+i[3]))
-#cv.Rectangle(bg_img,(largest_bound[0],largest_bound[1]),(largest_bound[0]+largest_bound[2],largest_bound[1]+largest_bound[3]),cv.RGB(0,0,0))
-#cv.ShowImage('image',bg_img)
-#cv.WaitKey(-1)
-
-fixedsize = (70, 70)
-bounding_box = (largest_bound[0],largest_bound[1],largest_bound[2]-largest_bound[0],largest_bound[3]-largest_bound[1])
-boxsize = (bounding_box[2], bounding_box[3])
+            largest_bound=(bounding_rects[0][0],bounding_rects[0][1],bounding_rects[0][0]+bounding_rects[0][2],bounding_rects[0][1]+bounding_rects[0][3])
+            for i in bounding_rects:
+                if(i[0]<largest_bound[0]):
+                    largest_bound=(i[0],largest_bound[1],largest_bound[2],largest_bound[3])
+                if(i[1]<largest_bound[1]):
+                    largest_bound=(largest_bound[0],i[1],largest_bound[2],largest_bound[3])
+                if((i[2]+i[0])>largest_bound[2]):
+                    largest_bound=(largest_bound[0],largest_bound[1],(i[0]+i[2]),largest_bound[3])
+                if((i[3]+i[1])>largest_bound[3]):
+                    largest_bound=(largest_bound[0],largest_bound[1],largest_bound[2],(i[1]+i[3]))
+    #cv.Rectangle(bg_img,(largest_bound[0],largest_bound[1]),(largest_bound[0]+largest_bound[2],largest_bound[1]+largest_bound[3]),cv.RGB(0,0,0))
+    #cv.ShowImage('image',bg_img)
+            bounding_box = (largest_bound[0],largest_bound[1],largest_bound[2]-largest_bound[0],largest_bound[3]-largest_bound[1])
+            boxsize = (bounding_box[2], bounding_box[3])
+        cv.WaitKey(time)
 
 motion = cv.CreateImage(boxsize, img_depth, 1)
 
@@ -158,8 +153,7 @@ motion = cv.CreateImage(boxsize, img_depth, 1)
 for rectimg in rectimgs:
     tempimg = cv.CreateImage(boxsize, img_depth, 3)
     cv.Resize(rectimg, tempimg)
-	
-    mhi_update.update_mhi(tempimg, motion, 35)  
+    mhi_update.update_mhi(tempimg, motion, 25)  
 
 hu_moments=getHuMoments(cv.GetMat(mhi_update.mhi),0)
 hu_array=list(hu_moments)
@@ -168,19 +162,5 @@ hu_array.append(type)
 av_utils.write_array_to_file(hu_array)
 cv.ShowImage('image_mhi',mhi_update.mhi)
 cv.WaitKey(-1)  
-
-
-
-
-
-
-
-
-hu_moments=getHuMoments(cv.GetMat(mhi_update.mhi),0)
-hu_array=list(hu_moments)
-hu_array.append(type)
-av_utils.write_array_to_file(hu_array)
-cv.ShowImage('image',mhi_update.mhi)
-cv.WaitKey(time)  
 
 

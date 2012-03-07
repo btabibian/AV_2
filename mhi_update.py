@@ -5,11 +5,11 @@ from math import cos, sin
 import cv
 
 CLOCKS_PER_SEC = 1
-MHI_DURATION = 1
+MHI_DURATION = 0.5
 
 MAX_TIME_DELTA = 0.5
 MIN_TIME_DELTA = 0.05
-N = 4
+N = 10
 
 buf = range(10) 
 last = 0
