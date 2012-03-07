@@ -11,7 +11,7 @@ MAX_TIME_DELTA = 0.5
 MIN_TIME_DELTA = 0.05
 N = 100
 
-buf = range(50) 
+buf = range(100) 
 last = 0
 mhi = None # MHI
 orient = None # orientation
@@ -20,7 +20,7 @@ segmask = None # motion segmentation map
 storage = None # temporary storage
 
 counter=0
-def update_mhi(img, dst, diff_threshold, timestamp):
+def update_mhi(img, dst, diff_threshold):
     global last
     global mhi
     global storage

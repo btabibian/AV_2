@@ -38,7 +38,7 @@ def learn(data, y):
     y=y[randperm,:]
     pca=mlpy.PCA()
     pca.learn(data)
-    data_pca=pca.transform(data,k=4)
+    data_pca=pca.transform(data,k=5)
     
     #data_cov=numpy.cov(data)
     #
@@ -50,11 +50,8 @@ def learn(data, y):
     #print(numpy.size(l[:,newaxis],0))
     #print(numpy.size(l[:,newaxis],1))
     #X=numpy.column_stack((data_pca))
-    X=numpy.column_stack((data_pca,
-                          data_pca[:,0]*data_pca[:,1],data_pca[:,0]*data_pca[:,2],data_pca[:,0]*data_pca[:,3]
-                        ,data_pca[:,1]*data_pca[:,2],data_pca[:,1]*data_pca[:,3], data_pca[:,2]*data_pca[:,3],
-                        data_pca[:,0]*data_pca[:,0],data_pca[:,1]*data_pca[:,1],data_pca[:,2]*data_pca[:,2],data_pca[:,3]*data_pca[:,3]))
-    #X=data_pca
+    
+    X=data_pca
     idx=mlpy.cv_kfold(numpy.size(X,0), numpy.size(X,0), strat=None, seed=4)
     corrects=0
     falses=0
@@ -65,7 +62,7 @@ def learn(data, y):
         X_ts=data_pca[ts,:]
         Y_ts=y[ts]
         
-        logReg=mlpy.LibLinear(solver_type='l1r_lr')
+        logReg=mlpy.LibLinear(solver_type='mcsvm_cs')
         logReg.learn(X_tr,Y_tr)
         w=logReg.w()
         y_training_pred=logReg.pred(X_tr)

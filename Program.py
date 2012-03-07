@@ -156,13 +156,7 @@ centre = frames / 2
 for rectimg in rectimgs:
     tempimg = cv.CreateImage(boxsize, img_depth, 3)
     cv.Resize(rectimg, tempimg)
-    frame = frame + 1
-    if frame > frames / 3 and frame < frames * 2 / 3:
-        timestamp = timestamp + 0.1
-    else:
-        timestamp = timestamp + 0.01
-    
-    mhi_update.update_mhi(tempimg, motion, 25, timestamp)  
+    mhi_update.update_mhi(tempimg, motion, 25)  
 
 hu_moments=getHuMoments(cv.GetMat(mhi_update.mhi),0)
 hu_array=list(hu_moments)
