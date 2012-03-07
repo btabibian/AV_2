@@ -28,14 +28,14 @@ def classify(data):
     print('index = ',index)
     return index
 def learn(data, y):
-    y=numpy.array(y,dtype=numpy.int)
+    y=numpy.array(y,dtype=numpy.int)-1
     #y=1
     mu=numpy.mean(data,0)
     data = data-numpy.tile(mu,(numpy.size(data,0),1))
     data=data/numpy.tile(numpy.std(data,0),(numpy.size(data,0),1))
-    
-    #data=data[randperm,:]
-    #y=y[randperm,:]
+    randperm=random.sample(range(0,numpy.size(data,0)),numpy.size(data,0))
+    data=data[randperm,:]
+    y=y[randperm,:]
     pca=mlpy.PCA()
     pca.learn(data)
     data_pca=pca.transform(data,k=4)
@@ -51,8 +51,8 @@ def learn(data, y):
     #print(numpy.size(l[:,newaxis],1))
     #X=numpy.column_stack((data_pca))
     X=numpy.column_stack((data_pca,
-                          #data_pca[:,0]*data_pca[:,1],data_pca[:,0]*data_pca[:,2],data_pca[:,0]*data_pca[:,3]
-                        #,data_pca[:,1]*data_pca[:,2],data_pca[:,1]*data_pca[:,3], data_pca[:,2]*data_pca[:,3],
+                          data_pca[:,0]*data_pca[:,1],data_pca[:,0]*data_pca[:,2],data_pca[:,0]*data_pca[:,3]
+                        ,data_pca[:,1]*data_pca[:,2],data_pca[:,1]*data_pca[:,3], data_pca[:,2]*data_pca[:,3],
                         data_pca[:,0]*data_pca[:,0],data_pca[:,1]*data_pca[:,1],data_pca[:,2]*data_pca[:,2],data_pca[:,3]*data_pca[:,3]))
     #X=data_pca
     idx=mlpy.cv_kfold(numpy.size(X,0), numpy.size(X,0), strat=None, seed=4)
@@ -61,25 +61,24 @@ def learn(data, y):
     confusion=numpy.zeros((3,3))
     for tr,ts in idx:
         X_tr=data_pca[tr,:]
-        Y_tr=y[tr,:]
+        Y_tr=y[tr]
         X_ts=data_pca[ts,:]
-        Y_ts=y[ts,:]
-        logReg=mlpy.LibLinear(solver_type='l2r_lr_dual')
+        Y_ts=y[ts]
+        
+        logReg=mlpy.LibLinear(solver_type='l1r_lr')
         logReg.learn(X_tr,Y_tr)
         w=logReg.w()
         y_training_pred=logReg.pred(X_tr)
-        #y_training_pred(numpy.nonzero(y_training_pred==1),:)=3
-        print(numpy.size(numpy.nonzero(y_training_pred==Y_tr))/float(numpy.size(Y_tr)))
+        y_trained=y_training_pred.copy()
+        
+        print(numpy.size(numpy.nonzero(y_trained==Y_tr))/float(numpy.size(Y_tr)))
         y_dat=logReg.pred(X_ts)
-        if(y_dat==1):
-            y_dat=3
-        elif(y_dat==3):
-            y_dat=1
+        
 
 
         corrects=corrects+numpy.size(numpy.nonzero(y_dat==Y_ts))
         falses=falses+numpy.size(Y_ts)-numpy.size(numpy.nonzero(y_dat==Y_ts))
-        confusion[y_dat-1,Y_ts-1]=confusion[y_dat-1,Y_ts-1]+1
+        confusion[y_dat,Y_ts]=confusion[y_dat,Y_ts]+1
 
     print(falses)
     print(corrects)

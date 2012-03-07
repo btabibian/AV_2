@@ -40,7 +40,6 @@ index=23
 path=pathes[index][0]
 type=pathes[index][1]
 time=30
-mhi_update.init()
 dirList=os.listdir(path)
 cv.NamedWindow('image')
 
