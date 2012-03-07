@@ -159,9 +159,9 @@ for rectimg in rectimgs:
     cv.Resize(rectimg, tempimg)
     frame = frame + 1
     if frame > frames / 3 and frame < frames * 2 / 3:
-        timestamp = timestamp + 0.1
+        timestamp = timestamp + 0.12
     else:
-        timestamp = timestamp + 0.01
+        timestamp = timestamp + 0.02
     
     mhi_update.update_mhi(tempimg, motion, 25, timestamp)  
 
