@@ -40,7 +40,6 @@ index=23
 path=pathes[index][0]
 type=pathes[index][1]
 time=30
-mhi_update.init()
 dirList=os.listdir(path)
 cv.NamedWindow('image')
 
@@ -157,13 +156,7 @@ centre = frames / 2
 for rectimg in rectimgs:
     tempimg = cv.CreateImage(boxsize, img_depth, 3)
     cv.Resize(rectimg, tempimg)
-    frame = frame + 1
-    if frame > frames / 3 and frame < frames * 2 / 3:
-        timestamp = timestamp + 0.12
-    else:
-        timestamp = timestamp + 0.02
-    
-    mhi_update.update_mhi(tempimg, motion, 25, timestamp)  
+    mhi_update.update_mhi(tempimg, motion, 25)  
 
 hu_moments=getHuMoments(cv.GetMat(mhi_update.mhi),0)
 hu_array=list(hu_moments)

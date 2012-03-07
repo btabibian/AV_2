@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{46c89838-bae1-450d-8d26-6bf65fbe5db7}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>classify.py</StartupFile>
+    <StartupFile>Program.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

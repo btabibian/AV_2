@@ -5,53 +5,31 @@ from math import cos, sin
 import cv
 
 CLOCKS_PER_SEC = 1
-MHI_DURATION = 0.5
+MHI_DURATION = 5
 
 MAX_TIME_DELTA = 0.5
 MIN_TIME_DELTA = 0.05
 N = 100
 
-buf = range(10) 
+buf = range(100) 
 last = 0
 mhi = None # MHI
 orient = None # orientation
 mask = None # valid orientation mask
 segmask = None # motion segmentation map
 storage = None # temporary storage
-def init():
-    global CLOCKS_PER_SEC
-    CLOCKS_PER_SEC = 1
-    global MHI_DURATION
-    MHI_DURATION = 1
-    global MAX_TIME_DELTA
-    MAX_TIME_DELTA = 0.5
-    global MIN_TIME_DELTA
-    MIN_TIME_DELTA = 0.05
-    global N
-    N = 10
 
-    global buf
-    buf = range(10) 
-    global last
-    last = 0
-    global mhi
-    mhi = None # MHI
-    global orient
-    orient = None # orientation
-    global mask
-    mask = None # valid orientation mask
-    global segmask
-    segmask = None # motion segmentation map
-    global storage
-    storage = None # temporary storage    
-def update_mhi(img, dst, diff_threshold, timestamp):
+counter=0
+def update_mhi(img, dst, diff_threshold):
     global last
     global mhi
     global storage
     global mask
     global orient
     global segmask
-    # timestamp = time.clock() / CLOCKS_PER_SEC # get current time in seconds
+    global counter
+    timestamp = counter#time.clock() / CLOCKS_PER_SEC # get current time in seconds
+    counter=counter+0.5
     size = cv.GetSize(img) # get current frame size
     idx1 = last
     if not mhi or cv.GetSize(mhi) != size:
