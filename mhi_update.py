@@ -9,7 +9,7 @@ MHI_DURATION = 0.5
 
 MAX_TIME_DELTA = 0.5
 MIN_TIME_DELTA = 0.05
-N = 10
+N = 100
 
 buf = range(10) 
 last = 0
@@ -44,14 +44,14 @@ def init():
     segmask = None # motion segmentation map
     global storage
     storage = None # temporary storage    
-def update_mhi(img, dst, diff_threshold):
+def update_mhi(img, dst, diff_threshold, timestamp):
     global last
     global mhi
     global storage
     global mask
     global orient
     global segmask
-    timestamp = time.clock() / CLOCKS_PER_SEC # get current time in seconds
+    # timestamp = time.clock() / CLOCKS_PER_SEC # get current time in seconds
     size = cv.GetSize(img) # get current frame size
     idx1 = last
     if not mhi or cv.GetSize(mhi) != size:

@@ -123,7 +123,7 @@ for fname in dirList:
                                   cv.RGB(255,255,255))    
             
             tempimg = cv.CreateImage(img_size, img_depth, img_channel)
-            cv.DrawContours(tempimg, cnt_biggest, cv.RGB(255,255,255), cv.RGB(255,255,255), 0)
+            cv.DrawContours(tempimg, cnt_biggest, cv.RGB(255,255,255), cv.RGB(255,255,255), 0, -1)
             rectimgs.append(cv.GetSubRect(tempimg, rect))
                                                
             
@@ -150,10 +150,20 @@ for fname in dirList:
 motion = cv.CreateImage(boxsize, img_depth, 1)
 
 
+frame = 0
+timestamp = 0
+frames = len(rectimgs)
+centre = frames / 2
 for rectimg in rectimgs:
     tempimg = cv.CreateImage(boxsize, img_depth, 3)
     cv.Resize(rectimg, tempimg)
-    mhi_update.update_mhi(tempimg, motion, 25)  
+    frame = frame + 1
+    if frame > frames / 3 and frame < frames * 2 / 3:
+        timestamp = timestamp + 0.1
+    else:
+        timestamp = timestamp + 0.01
+    
+    mhi_update.update_mhi(tempimg, motion, 25, timestamp)  
 
 hu_moments=getHuMoments(cv.GetMat(mhi_update.mhi),0)
 hu_array=list(hu_moments)
@@ -161,19 +171,19 @@ hu_array=list(hu_moments)
 print maxareaseq
 
 for i in range(5):
-	area = 0
-	cnt  = 0
-	for ii in range(len(maxareaseq) / 5):
-		j = len(maxareaseq) / 5 * i + ii
-		if j < len(maxareaseq):
-			cnt = cnt + 1
-			area = area + maxareaseq[j]
-			print str(j) + ": " + str(maxareaseq[j])
-	print cnt
-	
-	area = area / cnt
-	hu_array.append(area)
-	
+    area = 0
+    cnt  = 0
+    for ii in range(len(maxareaseq) / 5):
+        j = len(maxareaseq) / 5 * i + ii
+        if j < len(maxareaseq):
+            cnt = cnt + 1
+            area = area + maxareaseq[j]
+            print str(j) + ": " + str(maxareaseq[j])
+    print cnt
+    
+    area = area / cnt
+    hu_array.append(area)
+    
 hu_array.append(type)
 av_utils.write_array_to_file(hu_array)
 cv.ShowImage('image_mhi',mhi_update.mhi)
