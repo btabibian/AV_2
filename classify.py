@@ -32,6 +32,7 @@ def learn(data, y):
     corrects=0
     falses=0
     confusion=numpy.zeros((3,3))
+
     for tr,ts in idx:
         X_tr=data_pca[tr,:]
         Y_tr=y[tr]
@@ -47,17 +48,21 @@ def learn(data, y):
         print(numpy.size(numpy.nonzero(y_trained==Y_tr))/float(numpy.size(Y_tr)))
         y_dat=logReg.pred(X_ts)
         
-
-
         corrects=corrects+numpy.size(numpy.nonzero(y_dat==Y_ts))
         falses=falses+numpy.size(Y_ts)-numpy.size(numpy.nonzero(y_dat==Y_ts))
         confusion[y_dat,Y_ts]=confusion[y_dat,Y_ts]+1
-
+		
+	for i in range(len(X)):
+		print i
+		print ":" 
+		print y[i]
+	
     print(falses)
     print(corrects)
     print(corrects/float(falses+corrects))
     print(confusion)
-
+	
+	
 
 def script():
     [X,y]=read_file()

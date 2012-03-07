@@ -28,7 +28,7 @@ To improve precision of the background subtraction and to account for possible l
 Image^*_n = f(Image_n - Background) - f(Image_1 - Background), n \geq 2
 \end{math}
 
-Erosion and dilation is then done for such image. This helps further smoothen the detected hand and also helps eradicate any noise which appears not attached to the hand.
+Erosion and dilation is then done for such image. This helps further smoothen the detected hand and also helps eradicate any noise which appears not attached to the hand. Furthermore, dilation helps to connect parts of the same object, which might appear disjoint because of shadows.
 
 Contours of the objects are then detected using simple chain approximation algorithm. Such algorithm scans binary image vertically as well as horizontally looking for chains of white pixels. It flips all the white pixels except from the pixels which represent both ends of each such chain. Using this technique we are able to obtain contours of all objects in the image. Contours of object obtained by using this method is showin in Figure \ref{fig:contours}.
 
