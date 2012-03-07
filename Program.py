@@ -4,7 +4,7 @@ import fnmatch
 import time
 import av_utils
 import mhi_update
-import classify
+#import classify
         
 def getBiggestCountour(Seq):
     max_area =0
@@ -157,8 +157,24 @@ for rectimg in rectimgs:
 
 hu_moments=getHuMoments(cv.GetMat(mhi_update.mhi),0)
 hu_array=list(hu_moments)
-hu_array.append(type)
 
+print maxareaseq
+
+for i in range(5):
+	area = 0
+	cnt  = 0
+	for ii in range(len(maxareaseq) / 5):
+		j = len(maxareaseq) / 5 * i + ii
+		if j < len(maxareaseq):
+			cnt = cnt + 1
+			area = area + maxareaseq[j]
+			print str(j) + ": " + str(maxareaseq[j])
+	print cnt
+	
+	area = area / cnt
+	hu_array.append(area)
+	
+hu_array.append(type)
 av_utils.write_array_to_file(hu_array)
 cv.ShowImage('image_mhi',mhi_update.mhi)
 cv.WaitKey(-1)  
