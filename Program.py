@@ -4,6 +4,7 @@ import fnmatch
 import time
 import av_utils
 import mhi_update
+import classify
 
         
 def getBiggestCountour(Seq):
@@ -27,11 +28,22 @@ Thresh = 3
 
 bg = './data/background1.jpg'
 
-path = './data/train/3-6/'
-type = 3
+pathes = [('./data/train/1-1/',1),('./data/train/1-2/',1),('./data/train/1-3/',1)
+        ,('./data/train/1-4/',2),('./data/train/1-5/',2),('./data/train/1-6/',2)
+        ,('./data/train/1-7/',3),('./data/train/1-8/',3),('./data/train/1-9/',3)
+        ,('./data/train/2-1/',3),('./data/train/2-2/',1),('./data/train/2-3/',2)
+        ,('./data/train/2-4/',3),('./data/train/2-5/',1),('./data/train/2-6/',2)
+        ,('./data/train/3-1/',2),('./data/train/3-2/',2),('./data/train/3-3/',2)
+        ,('./data/train/3-4/',3),('./data/train/3-5/',3),('./data/train/3-6/',3)
+        ,('./data/train/3-7/',1),('./data/train/3-8/',1),('./data/train/3-9/',1)]
+index=23
 
-dirList = os.listdir(path)
-
+path=pathes[index][0]
+type=pathes[index][1]
+time=30
+mhi_update.init()
+bg= './data/background1.jpg'
+dirList=os.listdir(path)
 cv.NamedWindow('image')
 
 av_utils.av_debug('background image loaded from: '+ bg)
@@ -47,7 +59,7 @@ av_utils.av_debug('image info, size:' + str(img_size) + ', ' +
 bg_gray_img = cv.CreateImage(img_size, img_depth, 1)
     
 cv.ShowImage('image', bg_img)
-cv.WaitKey(-1)
+cv.WaitKey(time)
 
 storage = cv.CreateMemStorage(0)
 bounding_rects = list()
@@ -86,8 +98,7 @@ for fname in dirList:
     #cv.Threshold(img_gray,,Thresh,Thresh,cv.CV_THRESH_BINARY)
     
     #img_bw_sub_eroded=cv.CreateImage(img_size,cv.IPL_DEPTH_8U,1)
-    
-    kernel = cv.CreateStructuringElementEx(7, 7, 3, 3, cv.CV_SHAPE_CROSS)
+    kernel=cv.CreateStructuringElementEx(21,21,11,11,cv.CV_SHAPE_CROSS)
     #cv.Erode(img_bw_sub,img_bw_sub_eroded,kernel)
 
     img_bw_sub_dilated=cv.CreateImage(img_size, cv.IPL_DEPTH_8U, 1)
@@ -153,6 +164,7 @@ for rectimg in rectimgs:
 hu_moments=getHuMoments(cv.GetMat(mhi_update.mhi),0)
 hu_array=list(hu_moments)
 hu_array.append(type)
+
 av_utils.write_array_to_file(hu_array)
 cv.ShowImage('image_mhi',mhi_update.mhi)
 cv.WaitKey(-1)  
@@ -169,6 +181,6 @@ hu_array=list(hu_moments)
 hu_array.append(type)
 av_utils.write_array_to_file(hu_array)
 cv.ShowImage('image',mhi_update.mhi)
-cv.WaitKey(-1)  
+cv.WaitKey(time)  
 
 

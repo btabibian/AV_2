@@ -4,12 +4,12 @@ import time
 from math import cos, sin
 import cv
 
-CLOCKS_PER_SEC = 1.0
+CLOCKS_PER_SEC = 1
 MHI_DURATION = 1
 
 MAX_TIME_DELTA = 0.5
 MIN_TIME_DELTA = 0.05
-N = 10
+N = 4
 
 buf = range(10) 
 last = 0
@@ -18,7 +18,32 @@ orient = None # orientation
 mask = None # valid orientation mask
 segmask = None # motion segmentation map
 storage = None # temporary storage
+def init():
+    global CLOCKS_PER_SEC
+    CLOCKS_PER_SEC = 1
+    global MHI_DURATION
+    MHI_DURATION = 1
+    global MAX_TIME_DELTA
+    MAX_TIME_DELTA = 0.5
+    global MIN_TIME_DELTA
+    MIN_TIME_DELTA = 0.05
+    global N
+    N = 10
 
+    global buf
+    buf = range(10) 
+    global last
+    last = 0
+    global mhi
+    mhi = None # MHI
+    global orient
+    orient = None # orientation
+    global mask
+    mask = None # valid orientation mask
+    global segmask
+    segmask = None # motion segmentation map
+    global storage
+    storage = None # temporary storage    
 def update_mhi(img, dst, diff_threshold):
     global last
     global mhi
