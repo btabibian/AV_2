@@ -26,6 +26,7 @@ def getHuMoments(Seq,binary=1):
 Thresh = 3
 
 bg = './data/background2.jpg'
+
 os.remove('./output.txt')
 pathes = [('./data/train/1-1/',1),('./data/train/1-2/',1),('./data/train/1-3/',1)
         ,('./data/train/1-4/',2),('./data/train/1-5/',2),('./data/train/1-6/',2)
@@ -35,9 +36,11 @@ pathes = [('./data/train/1-1/',1),('./data/train/1-2/',1),('./data/train/1-3/',1
         ,('./data/train/3-1/',2),('./data/train/3-2/',2),('./data/train/3-3/',2)
         ,('./data/train/3-4/',3),('./data/train/3-5/',3),('./data/train/3-6/',3)
         ,('./data/train/3-7/',1),('./data/train/3-8/',1),('./data/train/3-9/',1)]
+index=0
 for path, type in pathes:
+    index=index+1
     mhi=mhi_update.mhi()
-    time=30
+    time=-1
     dirList=os.listdir(path)
     cv.NamedWindow('image')
 
@@ -65,8 +68,9 @@ for path, type in pathes:
 
     maxareaseq = []
     rectimgs = []
-
+    indexj=0
     for fname in dirList:
+        indexj=indexj+1
         if not fnmatch.fnmatch(fname,'*.jpg'):
             continue
         
@@ -79,8 +83,6 @@ for path, type in pathes:
         img_bw_sub = cv.CreateImage(img_size, cv.IPL_DEPTH_8U, 1)
     
         cv.ShowImage('image', img_sub)
-        #cv.WaitKey(-1)
-    
         cv.InRangeS(img_sub, (0, 0, 27), (100, 100, 140), img_bw_sub)
     
         if not last_bw_sub_set:
@@ -90,24 +92,13 @@ for path, type in pathes:
         else:
             cv.Sub(img_bw_sub, last_bw_sub, img_bw_sub)
     
-        #cv.Threshold(img_gray,,Thresh,Thresh,cv.CV_THRESH_BINARY)
-    
-        
-
         img_bw_sub_dilated=cv.CreateImage(img_size, cv.IPL_DEPTH_8U, 1)
-        ##kernel=cv.CreateStructuringElementEx(5,5,2,2,cv.MORPH_CROSS)
         kernel=cv.CreateStructuringElementEx(11,11,6,6,cv.CV_SHAPE_CROSS)
         cv.Dilate(img_bw_sub,img_bw_sub_dilated,kernel)
-
-        #img_bw_sub_eroded=cv.CreateImage(img_size,cv.IPL_DEPTH_8U,1)
-        #kernel=cv.CreateStructuringElementEx(7,7,4,4,cv.CV_SHAPE_CROSS)
-        #cv.Erode(img_bw_sub_dilated,img_bw_sub_eroded,kernel)
 
         img_bw_sub_dilated_preContours=cv.CreateImage(img_size, cv.IPL_DEPTH_8U, 1)
         cv.Copy(img_bw_sub_dilated,
                 img_bw_sub_dilated_preContours)
-    
-    
     
         seq = cv.FindContours(img_bw_sub_dilated_preContours, storage, cv.CV_CHAIN_APPROX_SIMPLE)
     
@@ -143,15 +134,16 @@ for path, type in pathes:
                         largest_bound=(largest_bound[0],largest_bound[1],(i[0]+i[2]),largest_bound[3])
                     if((i[3]+i[1])>largest_bound[3]):
                         largest_bound=(largest_bound[0],largest_bound[1],largest_bound[2],(i[1]+i[3]))
-        #cv.Rectangle(bg_img,(largest_bound[0],largest_bound[1]),(largest_bound[0]+largest_bound[2],largest_bound[1]+largest_bound[3]),cv.RGB(0,0,0))
-        #cv.ShowImage('image',bg_img)
                 bounding_box = (largest_bound[0],largest_bound[1],largest_bound[2]-largest_bound[0],largest_bound[3]-largest_bound[1])
                 boxsize = (bounding_box[2], bounding_box[3])
-            cv.WaitKey(time)
+            if (cv.WaitKey(time)==115):
+                cv.SaveImage('./results/'+str(index)+str(indexj)+str('bw.jpg'),cv.GetSubRect(tempimg, rect))
+                cv.SaveImage('./results/'+str(index)+str(indexj)+str('orig.jpg'),cv.GetSubRect(img, rect))
+                cv.SaveImage('./results/'+str(index)+str(indexj)+str('sub.jpg'),cv.GetSubRect(img_sub, rect))
+
+            
 
     motion = cv.CreateImage(boxsize, img_depth, 1)
-
-
     frame = 0
     timestamp = 0
     frames = len(rectimgs)
@@ -160,12 +152,10 @@ for path, type in pathes:
         tempimg = cv.CreateImage(boxsize, img_depth, 3)
         cv.Resize(rectimg, tempimg)
         mhi.update_mhi(tempimg, motion, 25)  
-
     hu_moments=getHuMoments(cv.GetMat(mhi.mhi),0)
     hu_array=list(hu_moments)
 
     print maxareaseq
-
     for i in range(5):
         area = 0
         cnt  = 0
@@ -183,6 +173,10 @@ for path, type in pathes:
     hu_array.append(type)
     av_utils.write_array_to_file(hu_array)
     cv.ShowImage('image_mhi',mhi.mhi)
-    cv.WaitKey(time)  
+    if(cv.WaitKey(time) ==115):
+        out=cv.CreateImage(boxsize, cv. IPL_DEPTH_32F, 3)
+        cv.CvtColor(mhi.mhi,out,cv.CV_GRAY2BGR)
+        cv.CvtScale(out,out,255)
+        cv.SaveImage('./results/'+str(index)+str('mhi.jpg'),out)
 classify.script()
 
