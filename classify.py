@@ -7,9 +7,9 @@ import random
 def preproccessing(data,y):
     y=numpy.array(y,dtype=numpy.int)-1
     mu=numpy.mean(data,0)
-    
+    stan=numpy.std(data,0)
     data = data-numpy.tile(mu,(numpy.size(data,0),1))
-    data=data/numpy.tile(numpy.std(data,0),(numpy.size(data,0),1))
+    data=data/numpy.tile(stan,(numpy.size(data,0),1))
     
     randperm=random.sample(range(0,numpy.size(data,0)),numpy.size(data,0))
     data=data[randperm,:]
@@ -18,7 +18,7 @@ def preproccessing(data,y):
     pca=mlpy.PCA()
     pca.learn(data)
     data_pca=pca.transform(data,k=5)
-    return (data_pca,y)
+    return (data_pca,y,pca,mu,stan)
 def train(x,y):
     logReg=mlpy.LibLinear(solver_type='mcsvm_cs')
     logReg.learn(x,y)
@@ -27,7 +27,14 @@ def evaluate(y_model,y_true,confusion=None):
     if(confusion!=None):
         confusion[y_model,y_true]=confusion[y_model,y_true]+1
     return numpy.size(numpy.nonzero(y_model==y_true))/float(numpy.size(y_true)),confusion
-    
+def pred_new_instance(model,pca_model,mean,stan,x):
+    x = x-mean
+    x=  x/stan
+    pcad=pca_model.transform(x,5)
+    y=model.pred(pcad)
+    print('label is '+str(y))
+
+
 def cross_validation(data,y):
     idx=mlpy.cv_kfold(numpy.size(data,0), numpy.size(data,0), strat=None, seed=4)
     corrects=0
@@ -56,14 +63,14 @@ def cross_validation(data,y):
     return confusion, testavg/float(testavgcount), test_res/float(testavgcount)
 def learn(data, y):
     
-    (X,y)=preproccessing(data,y)
+    (X,y,pca_model,mean,stan)=preproccessing(data,y)
     model = train(X,y)
 
     confusion, training_error,test_error=cross_validation(X,y)
     print('average training error: '+str(training_error))
     print('test error: '+str(test_error))
     print('confusion matrix\n'+str(confusion))
-    
+    return model,pca_model,mean,stan
 def write_features(x,y):
      write=file('features.txt','a');
      p=(y, x)
@@ -80,7 +87,7 @@ def script():
     [X,y]=read_file()
     #x_dat,y=preproccessing(X,y)
     #write_features(x_dat,y)
-    learn(X,y)
+    return learn(X,y)
 
 def read_file():
     read=file('output.txt','r')
@@ -101,6 +108,6 @@ def read_file():
         else:
             full_data=set
     return (full_data[:,0:-1],full_data[:,-1])
-script()
+#script()
 
 

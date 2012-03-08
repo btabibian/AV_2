@@ -34,16 +34,16 @@ pathes = [('./data/train/1-1/',1),('./data/train/1-2/',1),('./data/train/1-3/',1
         ,('./data/train/1-4/',2),('./data/train/1-5/',2),('./data/train/1-6/',2)
         ,('./data/train/1-7/',3),('./data/train/1-8/',3),('./data/train/1-9/',3)
         ,('./data/train/2-1/',3),('./data/train/2-2/',1),('./data/train/2-3/',2)
-        ,('./data/train/2-4/',3),('./data/train/2-5/',1),('./data/train/2-6/',2)
+        ,('./data/train/3-9/',1),('./data/train/2-5/',1),('./data/train/2-6/',2)
         ,('./data/train/3-1/',2),('./data/train/3-2/',2),('./data/train/3-3/',2)
         ,('./data/train/3-4/',3),('./data/train/3-5/',3),('./data/train/3-6/',3)
-        ,('./data/train/3-7/',1),('./data/train/3-8/',1),('./data/train/3-9/',1)]
+        ,('./data/train/3-7/',1),('./data/train/3-8/',1),('./data/train/2-4/',3)]
 index=0
+pred=-1
 for path, type in pathes:
     index=index+1
     mhi=mhi_update.mhi()
-    #time=-1
-    time = 1
+    time = 10
     dirList=os.listdir(path)
     cv.NamedWindow('image')
 
@@ -110,14 +110,14 @@ for path, type in pathes:
             cnt_biggest, area = getBiggestCountour(seq)
             if (area > 15000):
                 maxareaseq.append(area)
-                av_utils.av_debug('contours area:'+str(area))
+                
                 rect = cv.BoundingRect(cnt_biggest)
                 bounding_rects.append(rect)
                 cv.DrawContours(img_sub, cnt_biggest, 
                                 cv.RGB(255,255,255), 
                                 cv.RGB(255,255,255), 0)
                                 
-                av_utils.av_debug('Rectangle: ' + str(rect))
+                
                 cv.Rectangle(img_sub, (rect[0], rect[1]), 
                                       (rect[0] + rect[2], rect[1] + rect[3]),
                                       cv.RGB(255,255,255))    
@@ -178,7 +178,7 @@ for path, type in pathes:
     hu_moments=getHuMoments(cv.GetMat(mhi.mhi),0)
     hu_array=list(hu_moments)
 
-    print maxareaseq
+    
     for i in range(5):
         area = 0
         cnt = 0
@@ -190,15 +190,24 @@ for path, type in pathes:
     
         area = area / cnt
         hu_array.append(area)
-    
-    hu_array.append(type)
-    av_utils.write_array_to_file(hu_array)
-    cv.ShowImage('image_mhi',mhi.mhi)
-    if(cv.WaitKey(time) ==115):
-        out=cv.CreateImage(boxsize, cv. IPL_DEPTH_32F, 3)
-        cv.CvtColor(mhi.mhi,out,cv.CV_GRAY2BGR)
-        cv.CvtScale(out,out,255)
-        cv.SaveImage('./results/'+str(index)+str('mhi.jpg'),out)
+    if(type==-1):
+        if(pred==-1):
+            model,pca_model,mean,stan= classify.script()
+            classify.pred_new_instance(model,pca_model,mean,stan,hu_array)
+            pred=1
+        else:
+            classify.pred_new_instance(model,pca_model,mean,stan,hu_array)
+        
+    else:
+        hu_array.append(type)
+        av_utils.write_array_to_file(hu_array)
+        cv.ShowImage('image_mhi',mhi.mhi)
+        if(cv.WaitKey(time) ==115):
+            out=cv.CreateImage(boxsize, cv. IPL_DEPTH_32F, 3)
+            cv.CvtColor(mhi.mhi,out,cv.CV_GRAY2BGR)
+            cv.CvtScale(out,out,255)
+            cv.SaveImage('./results/'+str(index)+str('mhi.jpg'),out)
+if(pred==-1):
+    classify.script()
 
-classify.script()
 
