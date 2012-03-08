@@ -1,26 +1,26 @@
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=80mm]{paclassplot.png}
-\caption{Scatter plot shows dependency between first two principal components used and actual class of an object. Plus signs indicate "paper" sign , crosses indicate "rock" sign, circles indicate "scissors" sign. }
+\includegraphics[width=110mm]{paclassplot.png}
+\caption{Scatter plot shows dependency between first two principal components used and actual class of an object. Black plus signs indicate "paper" sign , green crosses indicate "rock" sign, red circles indicate "scissors" sign. }
 \label{fig:paclassplot}
 \end{center}
 \end{figure}
 
-Cross validation test results showed that best accuracy over both test data and validation data was achieved by using combination of Hu moments and temporal area of the extracted object as features of the motion image and multi-class SVM for classification. Results for using different feature set are shown in Table \ref{tab:features}, for using different number of principal components are shown in Table \ref{tab:pca} and for using different classifiers in Table \ref{tab:classify}.
+Cross validation test results showed that best accuracy over validation data set was achieved by using combination of Hu moments and temporal area of the extracted object as features of the motion image and multi-class SVM for classification. Results for using different feature sets are shown in Table \ref{tab:features}, for using different number of principal components are shown in Table \ref{tab:pca} and for using different classifiers in Table \ref{tab:classify}.
 
 \begin{table}
 \begin{center}
 \begin{tabular}{| l | r | r |}
 \hline
 Features & Test set & Validation set \\ \hline
-Temporal area of object only & & \\
-Hu moments only & & \\
-Both & & 87.5\% \\
+Temporal area of object only & 73.9\% & 54.2\% \\
+Hu moments only & 79.3\% & 58.3\% \\
+Both & 91.6\% & 87.5\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Cross validation results when using different sets of feature.}
+\caption{Cross validation results when using different sets of features with optimal number of principal components and optimal classifier.}
 \label{tab:features}
 \end{table}
 
@@ -38,7 +38,7 @@ Number of PC & Test set & Validation set \\ \hline
 \hline
 \end{tabular}
 \end{center}
-\caption{Cross validation results when using different number of principal components.}
+\caption{Cross validation results when using different number of principal components with set of features and optimal classifier.}
 \label{tab:pca}
 \end{table}
 
@@ -53,6 +53,6 @@ Multi-class SVM & & 87.5\% \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Cross validation results when using different classifiers.}
-\label{tab:pca}
+\caption{Cross validation results when using different classifiers with optimal set of features and optimal number of principal components.}
+\label{tab:classify}
 \end{table}
