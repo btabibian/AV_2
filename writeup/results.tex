@@ -56,3 +56,10 @@ Multi-class SVM & 91.8\% & 87.5\% \\
 \caption{Cross validation results when using different classifiers with optimal set of features and optimal number of principal components.}
 \label{tab:classify}
 \end{table}
+
+
+\subsubsection*{Discussion}
+
+Because of combination of two different methods at feature extraction level we were able to achieve high accuracy of classification. While individually using Hu moments and temporal area of object gives us only moderate 58.3\% and 54.2\% accuracy respectively, combining both feature extraction methods and then performing PCA on them allows us to classify motion images with very high accuracy of 87.5\%. 
+
+We were able to fine tune other parameters, such as number of principal components used and what type of classifier to use, to further maximise accuracy of classification.
