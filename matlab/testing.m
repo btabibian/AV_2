@@ -1,3 +1,6 @@
+close all
+clear all
+clc
 data2 = [0.411569071796,-0.332253492574,2
 -3.84190504422,-2.6505205399,2
 -0.177918621619,-0.219481279103,2
@@ -31,8 +34,14 @@ data0 = [
 ];
 
 figure('Name', 'Image class versus two principal components')
-scatter(data0(:,1), data0(:,2), 'k+')
+
+
+scatter(data0(:,1), data0(:,2),100, 'k+','linewidth',3,'DisplayName','Paper')
+
 hold on
-scatter(data1(:,1), data1(:,2), 'ro')
+scatter(data1(:,1), data1(:,2),100, 'ro','linewidth',3,'DisplayName','Rock')
+
 hold on
-scatter(data2(:,1), data2(:,2), 'gx')
+scatter(data2(:,1), data2(:,2),100, 'gx','linewidth',3,'DisplayName','Scissors')
+set(get(gca,'XLabel'),'String','PC 1')
+set(get(gca,'YLabel'),'String','PC 2')
