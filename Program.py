@@ -27,7 +27,9 @@ Thresh = 3
 
 bg = './data/background2.jpg'
 
-os.remove('./output.txt')
+if os.path.exists('./output.txt'):
+    os.remove('./output.txt')
+    
 pathes = [('./data/train/1-1/',1),('./data/train/1-2/',1),('./data/train/1-3/',1)
         ,('./data/train/1-4/',2),('./data/train/1-5/',2),('./data/train/1-6/',2)
         ,('./data/train/1-7/',3),('./data/train/1-8/',3),('./data/train/1-9/',3)
@@ -40,7 +42,8 @@ index=0
 for path, type in pathes:
     index=index+1
     mhi=mhi_update.mhi()
-    time=-1
+    #time=-1
+    time = 1
     dirList=os.listdir(path)
     cv.NamedWindow('image')
 
@@ -65,12 +68,12 @@ for path, type in pathes:
     last_bw_sub = False
     last_bw_sub_set = False
 
-
     maxareaseq = []
     rectimgs = []
-    indexj=0
+    indexj = 0
+
     for fname in dirList:
-        indexj=indexj+1
+        indexj = indexj + 1
         if not fnmatch.fnmatch(fname,'*.jpg'):
             continue
         
@@ -96,11 +99,12 @@ for path, type in pathes:
         kernel=cv.CreateStructuringElementEx(11,11,6,6,cv.CV_SHAPE_CROSS)
         cv.Dilate(img_bw_sub,img_bw_sub_dilated,kernel)
 
-        img_bw_sub_dilated_preContours=cv.CreateImage(img_size, cv.IPL_DEPTH_8U, 1)
-        cv.Copy(img_bw_sub_dilated,
-                img_bw_sub_dilated_preContours)
+        img_bw_sub_dilated_preContours = cv.CreateImage(img_size, 
+                                                        cv.IPL_DEPTH_8U, 1)
+        cv.Copy(img_bw_sub_dilated, img_bw_sub_dilated_preContours)
     
-        seq = cv.FindContours(img_bw_sub_dilated_preContours, storage, cv.CV_CHAIN_APPROX_SIMPLE)
+        seq = cv.FindContours(img_bw_sub_dilated_preContours, storage, 
+                              cv.CV_CHAIN_APPROX_SIMPLE)
     
         if (len(seq) != 0):
             cnt_biggest, area = getBiggestCountour(seq)
@@ -109,37 +113,56 @@ for path, type in pathes:
                 av_utils.av_debug('contours area:'+str(area))
                 rect = cv.BoundingRect(cnt_biggest)
                 bounding_rects.append(rect)
-                cv.DrawContours(img_sub, cnt_biggest, cv.RGB(255,255,255), cv.RGB(255,255,255), 0)
+                cv.DrawContours(img_sub, cnt_biggest, 
+                                cv.RGB(255,255,255), 
+                                cv.RGB(255,255,255), 0)
+                                
                 av_utils.av_debug('Rectangle: ' + str(rect))
                 cv.Rectangle(img_sub, (rect[0], rect[1]), 
                                       (rect[0] + rect[2], rect[1] + rect[3]),
                                       cv.RGB(255,255,255))    
             
                 tempimg = cv.CreateImage(img_size, img_depth, img_channel)
-                cv.DrawContours(tempimg, cnt_biggest, cv.RGB(255,255,255), cv.RGB(255,255,255), 0, -1)
+                cv.DrawContours(tempimg, cnt_biggest, 
+                                cv.RGB(255,255,255), 
+                                cv.RGB(255,255,255), 0, -1)
                 rectimgs.append(cv.GetSubRect(tempimg, rect))
                                                
-            
                 cv.ShowImage('image', img_sub)
                 cv.ShowImage('image_temp', img_bw_sub)
     
 
-                largest_bound=(bounding_rects[0][0],bounding_rects[0][1],bounding_rects[0][0]+bounding_rects[0][2],bounding_rects[0][1]+bounding_rects[0][3])
+                largest_bound = (bounding_rects[0][0], 
+                                 bounding_rects[0][1],
+                                 bounding_rects[0][0] + bounding_rects[0][2],
+                                 bounding_rects[0][1] + bounding_rects[0][3])
+
                 for i in bounding_rects:
-                    if(i[0]<largest_bound[0]):
-                        largest_bound=(i[0],largest_bound[1],largest_bound[2],largest_bound[3])
-                    if(i[1]<largest_bound[1]):
-                        largest_bound=(largest_bound[0],i[1],largest_bound[2],largest_bound[3])
-                    if((i[2]+i[0])>largest_bound[2]):
-                        largest_bound=(largest_bound[0],largest_bound[1],(i[0]+i[2]),largest_bound[3])
-                    if((i[3]+i[1])>largest_bound[3]):
-                        largest_bound=(largest_bound[0],largest_bound[1],largest_bound[2],(i[1]+i[3]))
-                bounding_box = (largest_bound[0],largest_bound[1],largest_bound[2]-largest_bound[0],largest_bound[3]-largest_bound[1])
+                    if i[0] < largest_bound[0]:
+                        largest_bound = (i[0], largest_bound[1],
+                                         largest_bound[2], largest_bound[3])
+                    if i[1] < largest_bound[1]:
+                        largest_bound = (largest_bound[0], i[1],
+                                         largest_bound[2], largest_bound[3])
+                    if (i[2] + i[0]) > largest_bound[2]:
+                        largest_bound = (largest_bound[0], largest_bound[1],
+                                         (i[0] + i[2]), largest_bound[3])
+                    if (i[3]+i[1]) > largest_bound[3]:
+                        largest_bound = (largest_bound[0], largest_bound[1],
+                                         largest_bound[2], (i[1] + i[3]))
+                                         
+                bounding_box = (largest_bound[0], largest_bound[1],
+                                largest_bound[2] - largest_bound[0],
+                                largest_bound[3] - largest_bound[1])
                 boxsize = (bounding_box[2], bounding_box[3])
-            if (cv.WaitKey(time)==115):
-                cv.SaveImage('./results/'+str(index)+str(indexj)+str('bw.jpg'),cv.GetSubRect(tempimg, rect))
-                cv.SaveImage('./results/'+str(index)+str(indexj)+str('orig.jpg'),cv.GetSubRect(img, rect))
-                cv.SaveImage('./results/'+str(index)+str(indexj)+str('sub.jpg'),cv.GetSubRect(img_sub, rect))
+                
+            if (cv.WaitKey(time) == 115):
+                cv.SaveImage('./results/'+str(index)+str(indexj)+str('bw.jpg'),
+                             cv.GetSubRect(tempimg, rect))
+                cv.SaveImage('./results/'+str(index)+str(indexj)+str('orig.jpg'),
+                             cv.GetSubRect(img, rect))
+                cv.SaveImage('./results/'+str(index)+str(indexj)+str('sub.jpg'),
+                             cv.GetSubRect(img_sub, rect))
 
             
 
@@ -158,14 +181,12 @@ for path, type in pathes:
     print maxareaseq
     for i in range(5):
         area = 0
-        cnt  = 0
+        cnt = 0
         for ii in range(len(maxareaseq) / 5):
             j = len(maxareaseq) / 5 * i + ii
             if j < len(maxareaseq):
                 cnt = cnt + 1
                 area = area + maxareaseq[j]
-                print str(j) + ": " + str(maxareaseq[j])
-        print cnt
     
         area = area / cnt
         hu_array.append(area)
@@ -178,5 +199,6 @@ for path, type in pathes:
         cv.CvtColor(mhi.mhi,out,cv.CV_GRAY2BGR)
         cv.CvtScale(out,out,255)
         cv.SaveImage('./results/'+str(index)+str('mhi.jpg'),out)
+
 classify.script()
 

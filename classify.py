@@ -4,17 +4,7 @@ import os
 import mlpy
 import random
 
-def classify(data):
-    data=numpy.array(data)-numpy.array(mu)
-    x=numpy.dot(data,pca_matrix)
-    k=numpy.array([x[0]*x[1],x[1]*x[2],x[0]*x[2],x[3]*x[0],x[3]*x[1],x[3]*x[2]])
-    x=numpy.append(x,k)
-    x=numpy.append([1],x)
-    all_theta=numpy.array([numpy.array(paper_theta), numpy.array(rock_theta),numpy.array(scissors_theta)])
-    pred=numpy.dot(x,all_theta.T)
-    index=numpy.argmax(pred)
-    print('index = ',index)
-    return index
+    
 def learn(data, y):
     y=numpy.array(y,dtype=numpy.int)-1
     #y=1
@@ -32,7 +22,10 @@ def learn(data, y):
     corrects=0
     falses=0
     confusion=numpy.zeros((3,3))
-
+    
+    testavg = 0
+    testavgcount = 0
+    
     for tr,ts in idx:
         X_tr=data_pca[tr,:]
         Y_tr=y[tr]
@@ -48,27 +41,28 @@ def learn(data, y):
         print(numpy.size(numpy.nonzero(y_trained==Y_tr))/float(numpy.size(Y_tr)))
         y_dat=logReg.pred(X_ts)
         
+        testavg = testavg + numpy.size(numpy.nonzero(y_trained==Y_tr))/float(numpy.size(Y_tr))
+        testavgcount = testavgcount + 1
+        
         corrects=corrects+numpy.size(numpy.nonzero(y_dat==Y_ts))
         falses=falses+numpy.size(Y_ts)-numpy.size(numpy.nonzero(y_dat==Y_ts))
         confusion[y_dat,Y_ts]=confusion[y_dat,Y_ts]+1
-		
-	for i in range(len(X)):
-		print i
-		print ":" 
-		print y[i]
-	
+        
+    print "\n\n"
+    print(testavg/testavgcount)
     print(falses)
     print(corrects)
     print(corrects/float(falses+corrects))
     print(confusion)
-	
-	
+    
+    
 
 def script():
     [X,y]=read_file()
     print(X)
     print(y)
     learn(X,y)
+	
 def read_file():
     read=file('output.txt','r')
     full_data=None
@@ -89,7 +83,6 @@ def read_file():
             full_data=set
     print(numpy.size(full_data,0))
     return (full_data[:,0:-1],full_data[:,-1])
-#script()
 
 
 
