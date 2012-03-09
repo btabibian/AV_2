@@ -28,7 +28,7 @@ To improve precision of the background subtraction and to account for possible l
 Image^*_n = f(Image_n - Background) - f(Image_1 - Background), n \geq 2
 \end{math}
 
-Erosion and dilation is then done for such image. This helps further smoothen the detected hand and also helps eradicate any noise which appears not attached to the hand. Furthermore, dilation helps to connect parts of the same object, which might appear disjoint because of shadows.
+Dilation is then done for such image. This helps further smoothen the detected hand and also helps eradicate any noise which appears not attached to the hand. Furthermore, dilation helps to connect parts of the same object, which might appear disjoint because of shadows this is specially the case for many scissors images where two fingers are not connected in final result because of the shadow between fingers.
 
 Contours of the objects are then detected using simple chain approximation algorithm. Such algorithm scans binary image vertically as well as horizontally looking for chains of white pixels. It flips all the white pixels except from the pixels which represent both ends of each such chain. Using this technique we are able to obtain contours of all objects in the image. Contours of object obtained by using this method is showin in Figure \ref{fig:contours}.
 
@@ -40,4 +40,27 @@ Contours of the objects are then detected using simple chain approximation algor
 \end{center}
 \end{figure}
 
-Largest object in the image is then chosen. If area of such object is above given threshold, the object is chosen as representation of the hand in the image.
+Largest object in the image is then chosen. If area of such object is above given threshold, the object is chosen as representation of the hand in the image, this helps not include initial and last images of hands in the sequence where they are not completely visible in the picture.
+
+Summary of the algorithms and parameters used in Hand Recognition module is presented in table \ref{tbl:recognition}.
+\begin{table}
+\begin{tabular}{|c|l|}
+\hline 
+Preprocessing: & Smoothing with Median blur  Background subtraction\\ 
+\hline 
+Background subtraction: & Using background image provided\\ 
+\hline
+Thresholding: & on RGB image, $(0, 0, 27)$ and $(100, 100, 140)$\\ 
+\hline
+First image subtraction: & subtracting first image of the sequence\\ 
+\hline
+Mathematical Morphology & Dilation using Cross Kernel of size 11 $\times$ 11 \\ 
+\hline 
+Contour Extraction: & Simple Chain Approximation \\ 
+\hline 
+Area measure: & discarding contours of small size \\
+\hline 
+\end{tabular} 
+\caption{Summary of Classification Module parameters and algorithms}
+\label{tbl:recognition}
+\end{table}
