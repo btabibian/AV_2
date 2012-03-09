@@ -1,7 +1,12 @@
-To classify different types of image sequence we used MLpy library. MLpy is Machine Learning library for python which provides a variety of ML algorithms and tools to perform ML on data.\\
-The algorithm used in this project is Linear Support Vector Machine which trained over 5 principle components of the input data produced by previous section.
-\subsubsection*{Principle Component Analysis}
-Input vector consists of 12 features for every image sequence, 7 HuMoments and 5 Area measures over time. Dataset lies in 12 dimension space. We performed PCA on the input dataset to reduce dimensionality of the original dataset. Prior to Principal Component Analysis we normalize all the features to zero mean and standard deviation. In figure \ref{fig:pcaplot} we can see that only first 5 Principle Components contribute to most variation in the dataset and therefore input data sits on a lower dimension. \\Using these components we project the all the dataset and any other input data into lower 5 dimension subspace.\\
+To classify different types of image sequences MLpy library was used. MLpy is a machine learning library for python which provides a variety of algorithms and tools to perform machine learning on data.
+
+The algorithm used in this project is Linear Support Vector Machine which was trained over 5 principal components of the input data. Methods of producing such data was further described in Section \ref{sec:extraction}.
+
+\subsubsection*{Principal Component Analysis}
+
+Input vector consists of 12 features for every image sequence - 7 Hu moments and 5 area measures over time, therefore dataset lies in 12 dimensional space. principal component analysis (PCA) was performed on the input dataset to reduce dimensionality of the dataset. Prior to PCA all the features are normalised the zero mean and unit standard deviation. Figure \ref{fig:pcaplot} shows that first 5 principal components can explain most of the variance of the dataset. Therefore, we can deduct that input data sits on a five dimensional manifold. 
+
+Using these components we project entire dataset as well as any new input data into 5 dimensional subspace.
 
 \begin{figure}[htp]
 \begin{center}
@@ -12,13 +17,18 @@ Input vector consists of 12 features for every image sequence, 7 HuMoments and 5
 \label{fig:pcaplot}
 \end{figure}
 
-\subsubsection*{SVM}
-Projected data is then used to train a linear SVM. The algorithm is an implementation of multi-class support vector classification by Crammer and Singer. This algorithm is also available in MLpy library.\\
-We also tested Logistic Regression, however as later results will show SVM outperformed. The results for both classifiers are presented in results section.
-\subsubsection*{Cross Validation}
-In order to evaluate performance of the classifier we utilized Leave-one-out Cross-Validation. The algorithm, at each step takes one instance of data out and performs training on the remaining data and evaluates model on the left out data. Using the trained classifier test instances are checked and results averaged for all dataset.
+\subsubsection*{Support Vector Machine}
 
-Summary of the algorithms and parameters used in classification module is presented in table \ref{tbl:classification}.
+Projected data is then used to train a linear support vector machine (SVM). The algorithm used is an implementation of multi-class support vector classification by Crammer and Singer. This algorithm is also available in MLpy library.
+
+Logistic regression was also tested. However, as results in Section \ref{sec:results} shows SVM outperformed logistic regression and therefore was chosen to be used in the project. 
+
+\subsubsection*{Cross Validation}
+
+In order to evaluate performance of the classifier we utilised Leave-One-Out Cross-Validation. At each step the algorithm takes one instance of the data and performs training on the remaining data. Accuracy of prediciting left out data point is used as an evaluation metric. Using the trained classifier test instances are checked and results averaged for entire dataset.
+
+Summary of the algorithms and parameters used in the classification module is presented in table \ref{tbl:classification}.
+
 \begin{table}
 \begin{tabular}{|c|l|}
 \hline 
@@ -31,6 +41,6 @@ Performance Measure & Leave-One-Out Cross-Validation \\
 \hline 
 
 \end{tabular} 
-\caption{Summary of Classification Module parameters and algorithms}
+\caption{Summary of classification module parameters and algorithms}
 \label{tbl:classification}
 \end{table}

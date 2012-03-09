@@ -1,6 +1,7 @@
 \graphicspath{{./results/}}
-Figures \ref{fig:paperSeq},\ref{fig:rockSeq},\ref{fig:scissorsSeq} show different images sampled from each \textit{rock}, \textit{paper}, \textit{scissors} actions. Each set includes original image, background subtracted image and thresholded image after morphology on the data. The line on the subtracted image demonstrates the detected boundary for the hand.\\
-It can be seen from the images that boundary is not exactly on the hand, this is the effect of Dilation using Cross kernel. For \textit{scissors} action, dilation helps connect two fingers due to shadow between them.
+Figures \ref{fig:paperSeq}, Figure \ref{fig:rockSeq} and Figure \ref{fig:scissorsSeq} show different images sampled from each \textit{rock}, \textit{paper}, \textit{scissors} signs respectively. Each set includes an original image, background-subtracted image and thresholded image after morphology is performed on the data. The line on the subtracted image demonstrates the detected boundary of the hand.
+
+From the images it can be seen that boundary does not correspond exactly with the true boundary of the hand. This is the effect of dilation using cross kernel. In case of \textit{scissors} sign dilation helps connect two fingers which often appear disjoint due to a shadow between them.
 
 \begin{figure}[htp]
 \begin{center}
